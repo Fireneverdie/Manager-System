@@ -7,7 +7,7 @@ import { useUserStore } from "@/stores/userStore"
 import { useLoadRouterStore } from "@/stores/loadRouter"
 const userStore = useUserStore()
 const loadRouterStore = useLoadRouterStore()
-const logout = () => {
+const handleLogout = () => {
   localStorage.removeItem("token")
   userStore.clearUserInfo()
   loadRouterStore.setIsLoadRouter(false)
@@ -45,7 +45,35 @@ const logout = () => {
         </el-menu>
       </el-aside>
       <el-container>
-        <el-header>Header<button @click="logout">退出登录</button></el-header>
+        <el-header>
+          <div class="left">
+            <el-icon>
+              <Menu />
+            </el-icon>
+            <span style="margin-left: 10px">企业门户网站管理系统</span>
+          </div>
+          <div class="right">
+            <span>欢迎回来 {{ userStore.userInfo.username }}</span>
+            <el-dropdown>
+              <span class="el-dropdown-link">
+                <el-icon :size="30">
+                  <User />
+                </el-icon>
+                <el-icon class="el-icon--right">
+                  <arrow-down />
+                </el-icon>
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item>个人中心</el-dropdown-item>
+                  <el-dropdown-item @click="handleLogout"
+                    >退出</el-dropdown-item
+                  >
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </div>
+        </el-header>
         <el-main><RouterView /></el-main>
       </el-container>
     </el-container>
@@ -58,6 +86,35 @@ const logout = () => {
   height: 100vh;
   .el-menu {
     height: 100vh;
+  }
+}
+
+.el-header {
+  background-color: #2d3a4b;
+  color: white;
+  width: 100%;
+  height: 60px;
+  line-height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.right,
+.left {
+  display: flex;
+}
+
+.left {
+  i {
+    margin: auto;
+    cursor: pointer;
+  }
+}
+
+.right {
+  .el-dropdown {
+    margin: auto;
   }
 }
 </style>
