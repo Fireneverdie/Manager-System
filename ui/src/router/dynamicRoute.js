@@ -15,11 +15,17 @@ const dynamicRoute = [
     path: "/user/user-add",
     name: "user-add",
     component: UserAdd,
+    meta: {
+      requireAdmin: true,
+    },
   },
   {
     path: "/user/user-info",
     name: "user-info",
     component: UserInFo,
+    meta: {
+      requireAdmin: true,
+    },
   },
   {
     path: "/prod/prod-add",

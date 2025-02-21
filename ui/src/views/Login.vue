@@ -1,3 +1,26 @@
+<script setup>
+import { ref } from "vue"
+import axios from "axios"
+import { useUserStore } from "@/stores/userStore"
+import { useRouter } from "vue-router"
+const router = useRouter()
+const userStore = useUserStore()
+const loginForm = ref({
+  username: "",
+  password: "",
+  role: "admin",
+})
+const login = async () => {
+  console.log(loginForm.value)
+  const res = await axios.post("http://localhost:3000/login", loginForm.value)
+
+  console.log(res)
+  if (res.data.code === 200) {
+    userStore.setUserInfo(res.data.data)
+  }
+  router.push("/index")
+}
+</script>
 <template>
   <section>
     <div class="color"></div>
@@ -10,14 +33,22 @@
       <div class="square" style="--i: 3"></div>
       <div class="square" style="--i: 4"></div>
       <div class="container">
-        <div class="form">
+        <div class="form" @submit.prevent="login">
           <h2>Login Form</h2>
           <form>
             <div class="inputBox">
-              <input type="text" placeholder="Username" />
+              <input
+                type="text"
+                placeholder="Username"
+                v-model="loginForm.username"
+              />
             </div>
             <div class="inputBox">
-              <input type="password" placeholder="Password" />
+              <input
+                type="password"
+                placeholder="Password"
+                v-model="loginForm.password"
+              />
             </div>
             <div class="inputBox">
               <input type="submit" value="Login" />

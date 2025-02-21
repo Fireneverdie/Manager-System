@@ -3,6 +3,17 @@ import { RouterView } from "vue-router"
 import { useRouter, useRoute } from "vue-router"
 const router = useRouter()
 const route = useRoute()
+import { useUserStore } from "@/stores/userStore"
+import { useLoadRouterStore } from "@/stores/loadRouter"
+const userStore = useUserStore()
+const loadRouterStore = useLoadRouterStore()
+const logout = () => {
+  localStorage.removeItem("token")
+  userStore.clearUserInfo()
+  loadRouterStore.setIsLoadRouter(false)
+  router.removeRoute("layout")
+  router.push("/login")
+}
 </script>
 
 <template>
@@ -17,7 +28,7 @@ const route = useRoute()
           <el-menu-item index="/index">
             <span>首页</span>
           </el-menu-item>
-          <el-sub-menu index="/user">
+          <el-sub-menu index="/user" v-if="userStore.userInfo.role === 'admin'">
             <template #title>
               <span>用户管理</span>
             </template>
@@ -34,7 +45,7 @@ const route = useRoute()
         </el-menu>
       </el-aside>
       <el-container>
-        <el-header>Header</el-header>
+        <el-header>Header<button @click="logout">退出登录</button></el-header>
         <el-main><RouterView /></el-main>
       </el-container>
     </el-container>
