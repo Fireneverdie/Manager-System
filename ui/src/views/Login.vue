@@ -3,6 +3,7 @@ import { ref } from "vue"
 import axios from "axios"
 import { useUserStore } from "@/stores/userStore"
 import { useRouter } from "vue-router"
+import request from "../utils/axios-config"
 const router = useRouter()
 const userStore = useUserStore()
 const loginForm = ref({
@@ -12,7 +13,7 @@ const loginForm = ref({
 })
 const login = async () => {
   console.log(loginForm.value)
-  const res = await axios.post("http://localhost:3000/login", loginForm.value)
+  const res = await request.post("/login", loginForm.value)
 
   console.log(res)
   if (res.data.code === 200) {
