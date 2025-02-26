@@ -4,6 +4,7 @@ import ProductAdd from "@/views/product/ProductAdd.vue"
 import ProductInfo from "@/views/product/ProductInfo.vue"
 import Index from "@/views/Index.vue"
 import NotFound from "@/views/NotFound.vue"
+import Center from "@/views/user/Center.vue"
 
 const dynamicRoute = [
   {
@@ -26,6 +27,11 @@ const dynamicRoute = [
     meta: {
       requireAdmin: true,
     },
+  },
+  {
+    path: "/user/center",
+    name: "user-center",
+    component: Center,
   },
   {
     path: "/prod/prod-add",

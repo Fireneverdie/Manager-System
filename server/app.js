@@ -27,6 +27,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, "public")))
+app.use("/public", express.static("public"))
 
 app.use((req, res, next) => {
   if (req.url === "/login") {
@@ -34,27 +35,22 @@ app.use((req, res, next) => {
     return
   }
 
-  // console.log(req.headers)
-
   const token = req.headers["authorization"]
-  console.log(token)
   if (token) {
-    let payload = jwtUtil.verify(token)
+    const payload = jwtUtil.verify(token) // 这里会返回 payload 或 null
     if (payload) {
+      // 生成新 token 并续期
       const newToken = jwtUtil.generate(
-        {
-          id: payload.id,
-          username: payload.username,
-        },
+        { id: payload.id, username: payload.username },
         "1h"
       )
       res.header("Authorization", newToken)
       next()
     } else {
-      // const errResult = new Result(401,null,'token 过期了')
-      // res.json(errResult)
       res.status(401).send({ errCode: "-1", errorInfo: "token过期了" })
     }
+  } else {
+    res.status(401).send({ errCode: "-1", errorInfo: "未提供 token" })
   }
 })
 
@@ -67,20 +63,20 @@ app.use(function (req, res, next) {
   next(createError(404))
 })
 
-// error handler
-// app.use(function(err, req, res, next) {
-//   // set locals, only providing error in development
-//   res.locals.message = err.message;
-//   res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-//   // render the error page
-//   res.status(err.status || 500);
-//   res.render('error');
-// });
 // 错误处理中间件
-app.use((err, req, res, next) => {
-  logger.error(err)
-  res.status(500).json({ error: "Internal Server Error" })
-})
+app.use(async (err, req, res, next) => {
+  // 记录错误日志，包括请求信息
+  logger.error({
+    message: err.message,
+    stack: err.stack,
+    url: req.url,
+    method: req.method,
+    ip: req.ip,
+  })
 
+  let status = err.status || 500 // 如果错误对象中有状态码，则使用它，否则默认为500
+  let error = { error: "Internal Server Error" }
+
+  res.status(status).json(error)
+})
 module.exports = app

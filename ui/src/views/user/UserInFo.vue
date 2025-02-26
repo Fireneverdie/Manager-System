@@ -1,15 +1,18 @@
 <script setup>
 import { ref, reactive, onMounted } from "vue"
-import axios from "axios"
 import request from "../../utils/axios-config"
 import { ElMessage } from "element-plus"
+import Upload from "@/components/upload/Upload.vue"
 const baseUrl = import.meta.env.VITE_APP_BASE_URL
 const tableData = ref([])
 const centerDialogVisible = ref(false)
 const userFormRef = ref({})
 const userForm = reactive({
+  id: null,
   username: "",
   role: "editor", //admin是管理员 editor是编辑
+  avatar: "",
+  file: null,
 })
 
 const userFormRules = reactive({
@@ -39,35 +42,46 @@ const roleOptions = [
 ]
 
 const getTableData = async () => {
-  const res = await axios.get("/adminapi/user/list")
+  const res = await request.get("/users/list")
   tableData.value = res.data.data
 }
-// onMounted(() => {
-//   getTableData()
-// })
+onMounted(() => {
+  getTableData()
+})
 
 const handleEdit = (data) => {
   Object.assign(userForm, data)
+  console.log(userForm)
   centerDialogVisible.value = true
 }
 
 const handleEditComfirm = () => {
   userFormRef.value.validate(async (valid) => {
     if (valid) {
-      const res = await axios.put("/adminapi/user", userForm)
+      const res = await request.put("/users", userForm, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
 
       centerDialogVisible.value = false
       getTableData()
-      if (res.data.ActionType === "OK") ElMessage.success("更新成功")
+      if (res.data.code === 200) ElMessage.success("更新成功")
     }
   })
+  console.log("handleEditComfirm")
 }
 
 const handleDelete = async (id) => {
-  const result = await axios.delete(`/adminapi/user/${id}`)
-  // console.log(result)
-  if (result.data.ActionType === "OK") ElMessage.success("删除成功")
-  await getTableData()
+  const result = await request.delete(`/users/${id}`)
+
+  if (result.data.code === 200) ElMessage.success("删除成功")
+  getTableData()
+}
+
+const handleAvatarChange = (file) => {
+  userForm.avatar = URL.createObjectURL(file)
+  userForm.file = file
 }
 </script>
 <template>
@@ -112,7 +126,7 @@ const handleDelete = async (id) => {
               title="你确定要删除吗？"
               confirm-button-text="确认"
               cancel-button-text="取消"
-              @confirm="handleDelete(scope.row._id)"
+              @confirm="handleDelete(scope.row.id)"
             >
               <template #reference>
                 <el-button size="small" type="danger"> 删除 </el-button>
@@ -155,6 +169,9 @@ const handleDelete = async (id) => {
               :value="item.value"
             />
           </el-select>
+        </el-form-item>
+        <el-form-item label="头像">
+          <Upload :avatar="userForm.avatar" @fileChange="handleAvatarChange" />
         </el-form-item>
       </el-form>
       <template #footer>

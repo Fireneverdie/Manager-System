@@ -14,6 +14,10 @@ const handleLogout = () => {
   router.removeRoute("layout")
   router.push("/login")
 }
+
+const hadleCenter = () => {
+  router.push("/user/center")
+}
 </script>
 
 <template>
@@ -65,7 +69,9 @@ const handleLogout = () => {
               </span>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item>个人中心</el-dropdown-item>
+                  <el-dropdown-item @click="hadleCenter"
+                    >个人中心</el-dropdown-item
+                  >
                   <el-dropdown-item @click="handleLogout"
                     >退出</el-dropdown-item
                   >

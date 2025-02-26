@@ -12,10 +12,8 @@ const loginForm = ref({
   role: "admin",
 })
 const login = async () => {
-  console.log(loginForm.value)
   const res = await request.post("/login", loginForm.value)
 
-  console.log(res)
   if (res.data.code === 200) {
     userStore.setUserInfo(res.data.data)
   }

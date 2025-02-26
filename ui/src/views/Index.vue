@@ -11,8 +11,8 @@ const userStore = useUserStore()
         <el-col :span="4">
           <el-avatar
             :size="100"
-            :src="userStore.userInfo.avatarUrl"
-            v-if="userStore.userInfo.avatarUrl"
+            :src="'http://localhost:3000' + userStore.userInfo.avatar"
+            v-if="userStore.userInfo.avatar"
           />
           <el-avatar
             :size="100"

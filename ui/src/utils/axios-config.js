@@ -24,7 +24,6 @@ instance.interceptors.response.use(
     // Any status code that lie within the range of 2xx cause this function to trigger
     // Do something with response data
     const { authorization } = response.headers
-    console.log(authorization)
     authorization && localStorage.setItem("token", authorization)
 
     return response

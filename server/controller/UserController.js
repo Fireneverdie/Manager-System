@@ -32,5 +32,47 @@ const UserController = {
       })
     )
   },
+  add: async (req, res) => {
+    const { username, role, password } = req.body
+    const avatarFile = req.file
+
+    const avatar = avatarFile ? `/public/users/avatar/${req.file.filename}` : ""
+
+    const result = await UserService.add({ username, role, password, avatar })
+
+    console.log(result)
+    return res.send(Result.success("添加成功"))
+  },
+  list: async (req, res) => {
+    const result = await UserService.list()
+    return res.json(Result.success("操作成功", result))
+  },
+  delete: async (req, res) => {
+    const { id } = req.params
+    const result = await UserService.delete(id)
+    logger.info(`这是result的 值 ${result}`)
+    return res.json(Result.success("删除成功"))
+  },
+  update: async (req, res) => {
+    const { id, username, role, password } = req.body
+    const avatarFile = req.file
+
+    const avatar = avatarFile ? `/public/users/avatar/${req.file.filename}` : ""
+
+    const result = await UserService.update({
+      id,
+      username,
+      role,
+      avatar,
+      password,
+    })
+    logger.info(`这是update ’s result value ${result}`)
+    return res.json(Result.success("更新成功"))
+  },
+  getById: async (req, res) => {
+    const { id } = req.params
+    const result = await UserService.getById(id)
+    return res.json(Result.success("操作成功", result[0]))
+  },
 }
 module.exports = UserController
