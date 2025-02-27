@@ -1,4 +1,5 @@
 # Admin System Management
+[README 简体中文版](README.zh-CN.md)
 
 ## Project Introduction
 
