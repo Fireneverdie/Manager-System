@@ -10,7 +10,7 @@ const jwtUtil = {
     try {
       return jwt.verify(token, secret) // 直接返回解码后的 payload
     } catch (err) {
-      logger.err(err) // 记录错误日志
+      logger.error(err) // 记录错误日志
       return null // 返回 null 表示校验失败
     }
   },

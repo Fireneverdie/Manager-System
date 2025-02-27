@@ -7,6 +7,7 @@ const jwtUtil = require("./utils/jwt")
 const Result = require("./model/Result")
 var indexRouter = require("./routes/index")
 var usersRouter = require("./routes/users")
+const productRouter = require("./routes/product")
 const testRouter = require("./routes/test")
 const pinoHttp = require("pino-http")
 const httpLogger = pinoHttp({ logger })
@@ -57,6 +58,7 @@ app.use((req, res, next) => {
 app.use("/", indexRouter)
 app.use(usersRouter)
 app.use(testRouter)
+app.use(productRouter)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

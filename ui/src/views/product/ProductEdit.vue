@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-card>
-      <el-page-header content="添加产品" icon="" title="产品管理" />
+      <el-page-header content="产品编辑" @back="handleBack" title="产品管理" />
 
       <el-form
         ref="productFormRef"
@@ -23,7 +23,7 @@
           <Upload :avatar="productForm.cover" @fileChange="handleCoverChange" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitForm"> 添加产品 </el-button>
+          <el-button type="primary" @click="submitForm"> 更新产品 </el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -34,16 +34,27 @@
 import Upload from "@/components/upload/Upload.vue"
 import request from "@/utils/axios-config"
 import { ElMessage } from "element-plus"
-import { ref, reactive } from "vue"
+import { ref, reactive, onMounted } from "vue"
+import { useRouter, useRoute } from "vue-router"
 
+const router = useRouter()
+const route = useRoute()
 const productFormRef = ref({})
 const productForm = reactive({
+  id: null,
   name: "",
   introduction: "",
   cover: "",
   file: null,
 })
+onMounted(async () => {
+  const res = await request.get(`/products/${route.params.id}`)
+  Object.assign(productForm, res.data.data)
+})
 
+const handleBack = () => {
+  router.back()
+}
 const handleCoverChange = (file) => {
   productForm.cover = URL.createObjectURL(file)
   productForm.file = file
@@ -56,6 +67,7 @@ const productFormRules = reactive({
   introduction: [
     { required: true, message: "Please input introduction", trigger: "blur" },
   ],
+
   cover: [
     {
       required: true,
@@ -65,20 +77,18 @@ const productFormRules = reactive({
   ],
 })
 
-import { useRouter } from "vue-router"
-const router = useRouter()
 const submitForm = () => {
   productFormRef.value.validate(async (valid) => {
     if (valid) {
-      const res = await request.post("/products", productForm, {
+      const res = await request.put("/products", productForm, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       })
+      console.log(res)
+      if (res.data.code === 200) ElMessage.success("更新成功")
 
-      if (res.data.code === 200) ElMessage.success("添加成功")
-
-      router.push("/prod/prod-info")
+      router.back()
     }
   })
 }

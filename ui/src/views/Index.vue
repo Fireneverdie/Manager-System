@@ -1,6 +1,18 @@
 <script setup>
 import { useUserStore } from "@/stores/userStore"
+import request from "@/utils/axios-config"
+import { onMounted, ref } from "vue"
 const userStore = useUserStore()
+const loopList = ref([])
+const pageQuery = {
+  pageNum: 1,
+  pageSize: 3,
+}
+onMounted(async () => {
+  const res = await request.get("/products/list")
+  console.log(res)
+  loopList.value = res.data.data
+})
 </script>
 <template>
   <div>
@@ -32,9 +44,18 @@ const userStore = useUserStore()
           <span>公司产品</span>
         </div>
       </template>
-      <el-carousel :interval="4000" type="card" height="200px">
-        <el-carousel-item v-for="item in 6" :key="item">
-          <h3 text="2xl" justify="center">{{ item }}</h3>
+      <el-carousel :interval="4000" type="card" height="300px">
+        <el-carousel-item v-for="item in loopList" :key="item.id">
+          <div
+            :style="{
+              backgroundImage: `url(http://localhost:3000${item.cover})`,
+              backgroundRepeat: 'no-repeat',
+              backgroundSize: 'cover',
+              height: '100%',
+            }"
+          >
+            <h3 text="2xl" justify="center">{{ item.name }}</h3>
+          </div>
         </el-carousel-item>
       </el-carousel>
     </el-card>
@@ -47,9 +68,9 @@ const userStore = useUserStore()
 }
 
 .el-carousel__item h3 {
-  color: #475669;
+  color: #f2f2f2;
   opacity: 0.75;
-  line-height: 200px;
+  line-height: 300px;
   margin: 0;
   text-align: center;
 }

@@ -66,7 +66,6 @@ const UserController = {
       avatar,
       password,
     })
-    logger.info(`这是update ’s result value ${result}`)
     return res.json(Result.success("更新成功"))
   },
   getById: async (req, res) => {

@@ -51,22 +51,44 @@ const addDynamicRoute = () => {
   isLoadRouterStore.setIsLoadRouter(true)
 }
 
-router.beforeEach((to, from, next) => {
+// router.beforeEach((to, from, next) => {
+//   const isLoadRouterStore = useLoadRouterStore()
+
+//   if (to.name === "login") {
+//     next()
+//   } else {
+//     if (localStorage.getItem("token")) {
+//       if (!isLoadRouterStore.isLoadRouter) {
+//         addDynamicRoute()
+//         next(to.fullPath)
+//       }
+//       next()
+//     } else {
+//       next("/login")
+//     }
+//   }
+// })
+router.beforeEach(async (to, from, next) => {
   const isLoadRouterStore = useLoadRouterStore()
 
   if (to.name === "login") {
-    next()
-  } else {
-    if (localStorage.getItem("token")) {
-      if (!isLoadRouterStore.isLoadRouter) {
-        addDynamicRoute()
-        next(to.fullPath)
-      }
-      next()
-    } else {
-      next("/login")
-    }
+    return next() // 如果是登录页面，直接放行
   }
+
+  if (!localStorage.getItem("token")) {
+    return next("/login") // 如果没有token，重定向到登录页
+  }
+
+  // 如果路由已经加载过，则直接放行
+  if (isLoadRouterStore.isLoadRouter) {
+    return next()
+  }
+
+  // 动态加载路由
+  addDynamicRoute()
+
+  // 确保路由加载完成后再继续导航
+  next(to.fullPath)
 })
 
 export default router
