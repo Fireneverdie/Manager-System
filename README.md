@@ -36,10 +36,10 @@ Ensure you have the following software installed:
  
  ## Usage Instructions
  
-1.Log into the system using default accounts or register a new user.
-2.Navigate through different pages and functionalities based on assigned roles.
-3.Administrators can manage user information via the user management interface.
-4.Both administrators and editors can add and modify product information.
+1. Log into the system using default accounts or register a new user.
+2. Navigate through different pages and functionalities based on assigned roles.
+3. Administrators can manage user information via the user management interface.
+4. Both administrators and editors can add and modify product information.
   
   
   
