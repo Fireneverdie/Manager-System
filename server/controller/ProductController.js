@@ -11,7 +11,7 @@ const ProductController = {
       return res.json(Result.success("操作成功", result[0]))
     } catch (error) {
       logger.error(error)
-      throw error
+      return res.status(500).json(Result.error("获取产品失败", null))
     }
   },
   list: async (req, res) => {
@@ -20,7 +20,7 @@ const ProductController = {
       return res.json(Result.success("操作成功", result))
     } catch (error) {
       logger.error(error)
-      throw error
+      return res.status(500).json(Result.fail("获取产品列表失败", null))
     }
   },
   delete: async (req, res) => {
@@ -30,7 +30,7 @@ const ProductController = {
       return res.json(Result.success("删除成功"))
     } catch (error) {
       logger.error(error)
-      throw error
+      return res.status(500).json(Result.fail("删除失败", null))
     }
   },
   update: async (req, res) => {
@@ -48,7 +48,7 @@ const ProductController = {
       return res.json(Result.success("更新成功"))
     } catch (error) {
       logger.error(error)
-      throw error
+      return res.status(500).json(Result.fail("更新失败", null))
     }
   },
   add: async (req, res) => {
@@ -68,7 +68,7 @@ const ProductController = {
       return res.json(Result.success("添加成功"))
     } catch (error) {
       logger.error(error)
-      throw error
+      return res.status(500).json(Result.fail("添加产品失败", null))
     }
   },
   page: async (req, res) => {
@@ -83,7 +83,7 @@ const ProductController = {
       return res.json(Result.success("查询成功", result))
     } catch (error) {
       logger.error(error)
-      throw error
+      return res.status(500).json(Result.fail("获取信息失败", null))
     }
   },
 }

@@ -1,4 +1,7 @@
 const { query } = require("../config/db")
+const fsExtra = require("fs-extra")
+const path = require("path")
+const logger = require("../config/logger")
 const UserService = {
   login: async (username) => {
     const sql = "SELECT * FROM users WHERE username = ?"
@@ -23,8 +26,35 @@ const UserService = {
     }
   },
   delete: async (id) => {
-    const sql = "DELETE FROM users WHERE id = ?"
-    return await query(sql, [id])
+    try {
+      //判断当前删除的用户是否存在
+      const user = (await UserService.getById(id))[0]
+      if (!user) throw new Error("删除的用户不存在")
+
+      // 删除用户
+      const sql = "DELETE FROM users WHERE id = ?"
+      const result = await query(sql, [id])
+
+      //获取用户的头像存储再服务器上的图片
+      if (user.avatar) {
+        const fullPath = path
+          .join(__dirname, "..", user.avatar)
+          .replace(/\\/g, "/")
+        if (fsExtra.existsSync(fullPath)) {
+          try {
+            await fsExtra.remove(fullPath)
+          } catch (removeErr) {
+            logger.error(`Failed to delete file at ${fullPath}:`)
+            throw removeErr
+          }
+        }
+      }
+
+      return result
+    } catch (err) {
+      logger.error("删除用户失败:", err)
+      throw err // 或返回统一错误格式
+    }
   },
   list: async () => {
     const sql = "SELECT id,username,role,avatar FROM users"

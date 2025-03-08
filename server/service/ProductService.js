@@ -1,5 +1,7 @@
 const { query } = require("../config/db")
 const logger = require("../config/logger")
+const fsExtra = require("fs-extra")
+const path = require("path")
 
 const ProductService = {
   getById: async (id) => {
@@ -22,8 +24,32 @@ const ProductService = {
   },
   delete: async (id) => {
     try {
+      //获取产品信息
+      const product = (await ProductService.getById(id))[0]
+      if (!product) throw new Error("找不到指定的产品")
+
+      //删除数据库中的产品记录
       const sql = "DELETE FROM product WHERE id = ?"
       const result = await query(sql, [id])
+
+      //删除服务器上的图片文件
+      const fullPath = path
+        .join(__dirname, "..", product.cover)
+        .replace(/\\/g, "/")
+      if (product.cover && fsExtra.existsSync(fullPath)) {
+        // 删除逻辑...
+        try {
+          await fsExtra.remove(fullPath)
+          console.log(`File deleted successfully at ${fullPath}`) // 成功删除的信息
+        } catch (removeErr) {
+          console.error(`Failed to delete file at ${fullPath}:`, removeErr) // 错误信息
+          // 根据需要决定是否抛出异常
+          // throw removeErr;
+        }
+      } else {
+        console.warn(`File does not exist or cover is undefined: ${fullPath}`)
+      }
+
       return result
     } catch (err) {
       throw err
